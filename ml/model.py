@@ -1,13 +1,24 @@
 import pandas as pd
+import re
 
-# Load full dataset
+# Load data
 df = pd.read_csv("data/resumes_small.csv")
 
-# Take only first 500 rows (small dataset)
-df_small = df.head(1000)
+# Select columns
+df = df[['Resume_str', 'Category']]
+df.columns = ['resume', 'category']
 
-# Save smaller dataset
-df_small.to_csv("data/resumes_small.csv", index=False)
+# Clean text
+def clean_text(text):
+    text = text.lower()
+    text = re.sub(r'\W', ' ', text)
+    text = re.sub(r'\s+', ' ', text)
+    return text
 
-print("Small dataset created successfully!")
-print(df_small.shape)
+df['resume'] = df['resume'].apply(clean_text)
+
+# Drop missing
+df = df.dropna()
+
+print("Cleaned Data Shape:", df.shape)
+print(df.head())
